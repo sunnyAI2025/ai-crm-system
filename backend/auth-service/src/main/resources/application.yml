@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: auth-service
+  profiles:
+    active: dev
+  
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://ep-plain-moon-aewc6a58-pooler.c-2.us-east-2.aws.neon.tech:5432/neondb?sslmode=require}
+    username: ${DATABASE_USERNAME:neondb_owner}
+    password: ${DATABASE_PASSWORD:npg_TCx79eZizfGU}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      max-lifetime: 60000
+      connection-timeout: 10000
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+server:
+  port: 50002
+
+# JWT配置
+jwt:
+  secret: ${JWT_SECRET:ai-crm-jwt-secret-key-2024}
+  expiration: 86400000
+
+# 日志配置
+logging:
+  level:
+    com.aicrm: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: file-service
+  profiles:
+    active: dev
+  
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://ep-plain-moon-aewc6a58-pooler.c-2.us-east-2.aws.neon.tech:5432/neondb}
+    username: ${DATABASE_USERNAME:neondb_owner}
+    password: ${DATABASE_PASSWORD:npg_TCx79eZizfGU}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+server:
+  port: 50008
+
+# JWT配置
+jwt:
+  secret: ${JWT_SECRET:ai-crm-jwt-secret-key-2024}
+
+# 文件上传配置
+file:
+  upload:
+    path: ${FILE_UPLOAD_PATH:/tmp/uploads/}
+    max-size: 10MB
+    allowed-types: jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,txt,zip,rar
+
+# 日志配置
+logging:
+  level:
+    com.aicrm: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

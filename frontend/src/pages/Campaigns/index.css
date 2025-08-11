@@ -1,0 +1,176 @@
+.campaigns-page {
+  .page-header {
+    margin-bottom: 16px;
+  }
+
+  .ant-table-wrapper {
+    background: white;
+    border-radius: 8px;
+  }
+
+  .ant-table-tbody > tr > td {
+    vertical-align: top;
+    padding: 12px 16px;
+  }
+
+  .ant-table-tbody > tr:hover > td {
+    background-color: #f5f5f5;
+  }
+
+  .ant-btn-link {
+    padding: 4px 8px;
+    height: auto;
+  }
+
+  .ant-btn-link:hover {
+    background-color: rgba(24, 144, 255, 0.08);
+    border-radius: 4px;
+  }
+
+  .ant-btn-link.ant-btn-dangerous:hover {
+    background-color: rgba(245, 34, 45, 0.08);
+  }
+}
+
+/* 统计卡片样式 */
+.ant-statistic {
+  .ant-statistic-title {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  
+  .ant-statistic-content {
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+/* 活动状态标签样式 */
+.ant-tag {
+  border-radius: 12px;
+  font-size: 12px;
+  padding: 2px 8px;
+  margin: 2px;
+  font-weight: 500;
+}
+
+/* 活动信息区域样式 */
+.campaign-info {
+  .campaign-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .campaign-type {
+    margin-bottom: 4px;
+  }
+  
+  .target-audience {
+    color: #666;
+    font-size: 12px;
+  }
+}
+
+/* 预算信息样式 */
+.budget-info {
+  .budget-amount {
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  
+  .spent-amount {
+    color: #666;
+    font-size: 12px;
+  }
+}
+
+/* 效果数据样式 */
+.performance-info {
+  .performance-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 13px;
+    
+    .anticon {
+      margin-right: 4px;
+      width: 12px;
+    }
+  }
+  
+  .conversion-rate {
+    color: #666;
+    font-size: 12px;
+  }
+}
+
+/* ROI样式 */
+.roi-positive {
+  color: #52c41a;
+  font-weight: 600;
+}
+
+.roi-negative {
+  color: #f5222d;
+  font-weight: 600;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  .campaigns-page {
+    .ant-table-wrapper {
+      overflow-x: auto;
+    }
+    
+    .ant-col {
+      margin-bottom: 8px;
+    }
+    
+    .page-header {
+      text-align: center;
+    }
+    
+    .ant-table-tbody > tr > td {
+      font-size: 11px;
+      padding: 8px 4px;
+    }
+    
+    .ant-btn-link {
+      font-size: 11px;
+      padding: 2px 4px;
+    }
+    
+    .performance-info .performance-item {
+      font-size: 11px;
+    }
+    
+    .ant-statistic-content {
+      font-size: 16px;
+    }
+  }
+}
+
+/* 搜索和筛选区域 */
+.ant-input-search .ant-input-group-addon {
+  background: #f5f5f5;
+}
+
+.ant-select-selector {
+  border-radius: 6px;
+}
+
+.ant-picker {
+  border-radius: 6px;
+}
+
+/* 表单样式优化 */
+.ant-modal .ant-form-item-label > label {
+  font-weight: 500;
+}
+
+/* 多选标签样式 */
+.ant-select-multiple .ant-select-selection-item {
+  border-radius: 10px;
+  font-size: 12px;
+}

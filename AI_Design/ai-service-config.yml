@@ -1,0 +1,421 @@
+# AI数据分析服务配置文件
+# analytics-service application.yml
+
+server:
+  port: 50006
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+spring:
+  application:
+    name: analytics-service
+  
+  # 数据库配置
+  datasource:
+    url: jdbc:postgresql://ep-plain-moon-aewc6a58-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+    username: neondb_owner
+    password: npg_TCx79eZizfGU
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+  
+  # Redis配置
+  redis:
+    host: localhost
+    port: 6379
+    password: 
+    database: 1
+    lettuce:
+      pool:
+        max-active: 10
+        max-idle: 8
+        min-idle: 2
+        max-wait: -1ms
+      shutdown-timeout: 100ms
+    timeout: 3000ms
+  
+  # 任务调度
+  task:
+    scheduling:
+      pool:
+        size: 5
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 100
+
+# AI服务配置
+ai:
+  # OpenAI配置
+  openai:
+    api-key: ${OPENAI_API_KEY:your-api-key}
+    api-url: https://api.openai.com/v1
+    model: gpt-4-turbo-preview
+    temperature: 0.7
+    max-tokens: 2000
+    timeout: 30s
+    retry-count: 3
+    rate-limit:
+      requests-per-minute: 60
+      tokens-per-minute: 150000
+  
+  # 腾讯云NLP配置
+  tencent:
+    secret-id: ${TENCENT_SECRET_ID:your-secret-id}
+    secret-key: ${TENCENT_SECRET_KEY:your-secret-key}
+    region: ap-beijing
+    endpoint: nlp.tencentcloudapi.com
+  
+  # 百度AI配置
+  baidu:
+    api-key: ${BAIDU_API_KEY:your-api-key}
+    secret-key: ${BAIDU_SECRET_KEY:your-secret-key}
+    access-token-url: https://aip.baidubce.com/oauth/2.0/token
+    nlp-url: https://aip.baidubce.com/rpc/2.0/nlp/v1
+  
+  # Python ML服务配置
+  python-service:
+    url: http://localhost:5001
+    timeout: 60s
+    retry-count: 2
+    health-check-interval: 30s
+  
+  # 预测分析配置
+  prediction:
+    enabled: true
+    models:
+      sales-trend:
+        algorithm: "prophet+randomforest"
+        retrain-interval: "7d"
+        confidence-threshold: 0.8
+        features: ["order_count", "total_amount", "unique_customers", "avg_order_value"]
+      customer-behavior:
+        algorithm: "xgboost"
+        retrain-interval: "30d"
+        confidence-threshold: 0.75
+        features: ["order_history", "interaction_frequency", "demographics", "payment_behavior"]
+      churn-prediction:
+        algorithm: "randomforest"
+        retrain-interval: "14d"
+        confidence-threshold: 0.7
+        features: ["days_since_last_order", "order_frequency", "support_tickets", "payment_delays"]
+    cache:
+      enabled: true
+      ttl: 6h
+      redis-key-prefix: "prediction:"
+  
+  # 推荐系统配置
+  recommendation:
+    enabled: true
+    algorithms:
+      collaborative-filtering:
+        enabled: true
+        weight: 0.6
+        similarity-threshold: 0.3
+        max-recommendations: 20
+      content-based:
+        enabled: true
+        weight: 0.4
+        similarity-threshold: 0.5
+        max-recommendations: 20
+    cache:
+      enabled: true
+      ttl: 4h
+      redis-key-prefix: "recommend:"
+  
+  # 情感分析配置
+  sentiment:
+    enabled: true
+    providers:
+      tencent:
+        enabled: true
+        weight: 0.5
+        timeout: 10s
+      baidu:
+        enabled: true
+        weight: 0.3
+        timeout: 10s
+      local:
+        enabled: true
+        weight: 0.2
+        model-path: "/models/sentiment_model.pkl"
+    cache:
+      enabled: true
+      ttl: 24h
+      redis-key-prefix: "sentiment:"
+  
+  # 报告生成配置
+  report:
+    enabled: true
+    templates:
+      sales-report:
+        template-path: "/templates/sales_report.ftl"
+        default-charts: ["sales_trend", "channel_distribution", "product_analysis"]
+      customer-report:
+        template-path: "/templates/customer_report.ftl"
+        default-charts: ["customer_distribution", "behavior_analysis", "satisfaction_trend"]
+      marketing-report:
+        template-path: "/templates/marketing_report.ftl"
+        default-charts: ["campaign_performance", "roi_analysis", "conversion_funnel"]
+    export:
+      formats: ["pdf", "html", "excel"]
+      max-file-size: "50MB"
+      storage-path: "/reports"
+  
+  # 聊天引擎配置
+  chat:
+    enabled: true
+    session:
+      timeout: 24h
+      max-messages: 100
+      redis-key-prefix: "chat:"
+    intent-recognition:
+      enabled: true
+      confidence-threshold: 0.7
+      fallback-intent: "general_chat"
+    entity-extraction:
+      enabled: true
+      types: ["date", "number", "product", "customer", "channel"]
+    context-awareness:
+      enabled: true
+      max-context-length: 10
+      context-decay: 0.9
+  
+  # 风险评估配置
+  risk:
+    enabled: true
+    types:
+      customer-churn:
+        enabled: true
+        threshold: 0.7
+        evaluation-interval: "daily"
+        alert-threshold: 0.85
+      performance-risk:
+        enabled: true
+        threshold: 0.6
+        evaluation-interval: "weekly"
+        target-achievement-threshold: 0.8
+      cash-flow-risk:
+        enabled: true
+        threshold: 0.8
+        evaluation-interval: "daily"
+        warning-days: 30
+    alerts:
+      enabled: true
+      channels: ["email", "webhook"]
+      email-recipients: ["admin@company.com"]
+      webhook-url: "http://localhost:50001/api/alerts/webhook"
+
+# 监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,loggers
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      service: analytics
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+
+# 日志配置
+logging:
+  level:
+    com.crm.analytics: INFO
+    org.springframework.ai: INFO
+    org.springframework.cloud: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{36}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{36}] - %msg%n"
+  file:
+    name: logs/analytics-service.log
+    max-size: 100MB
+    max-history: 30
+    total-size-cap: 1GB
+
+# 文件存储配置
+storage:
+  type: minio # 可选: local, minio, s3
+  minio:
+    endpoint: http://localhost:9000
+    access-key: ${MINIO_ACCESS_KEY:minioadmin}
+    secret-key: ${MINIO_SECRET_KEY:minioadmin}
+    bucket-name: crm-ai-models
+    region: us-east-1
+  local:
+    base-path: /app/storage
+    max-file-size: 100MB
+
+# 缓存配置
+cache:
+  type: redis # 可选: redis, caffeine, composite
+  redis:
+    key-prefix: "crm:ai:"
+    default-ttl: 1h
+  caffeine:
+    maximum-size: 1000
+    expire-after-write: 30m
+  caches:
+    prediction-cache:
+      ttl: 6h
+      max-size: 500
+    recommendation-cache:
+      ttl: 4h
+      max-size: 1000
+    sentiment-cache:
+      ttl: 24h
+      max-size: 2000
+    chat-context-cache:
+      ttl: 24h
+      max-size: 1000
+
+# 安全配置
+security:
+  jwt:
+    enabled: true
+    secret: ${JWT_SECRET:your-jwt-secret}
+    expiration: 86400 # 24小时
+  cors:
+    enabled: true
+    allowed-origins: 
+      - "http://localhost:3000"
+      - "http://localhost:3001"
+    allowed-methods: 
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers: "*"
+    allow-credentials: true
+
+# 限流配置
+rate-limit:
+  enabled: true
+  global:
+    limit: 1000
+    window: 1m
+  per-user:
+    limit: 100
+    window: 1m
+  per-ip:
+    limit: 200
+    window: 1m
+
+---
+# 开发环境配置
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+ai:
+  openai:
+    api-key: sk-test-key
+  python-service:
+    url: http://localhost:5001
+  
+logging:
+  level:
+    com.crm.analytics: DEBUG
+    org.springframework.ai: DEBUG
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
+---
+# 测试环境配置
+spring:
+  config:
+    activate:
+      on-profile: test
+
+ai:
+  openai:
+    api-key: sk-test-key
+    model: gpt-3.5-turbo # 使用较便宜的模型进行测试
+  prediction:
+    enabled: false # 测试环境禁用预测功能
+  
+spring:
+  redis:
+    host: redis-test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+---
+# 生产环境配置
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+ai:
+  openai:
+    api-key: ${OPENAI_API_KEY}
+    rate-limit:
+      requests-per-minute: 100
+      tokens-per-minute: 200000
+  
+logging:
+  level:
+    com.crm.analytics: INFO
+    org.springframework.ai: WARN
+  file:
+    name: /var/log/analytics-service/app.log
+
+management:
+  endpoint:
+    health:
+      show-details: when-authorized
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+
+storage:
+  minio:
+    endpoint: ${MINIO_ENDPOINT}
+    access-key: ${MINIO_ACCESS_KEY}
+    secret-key: ${MINIO_SECRET_KEY}

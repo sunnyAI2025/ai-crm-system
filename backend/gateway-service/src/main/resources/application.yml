@@ -1,0 +1,95 @@
+spring:
+  application:
+    name: gateway-service
+  profiles:
+    active: dev
+  
+  cloud:
+    gateway:
+      routes:
+        # 认证服务路由
+        - id: auth-service
+          uri: http://localhost:50002
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+        
+        # 销售管理服务路由
+        - id: sales-service
+          uri: http://localhost:50003
+          predicates:
+            - Path=/api/sales/**
+          filters:
+            - StripPrefix=1
+        
+        # 营销管理服务路由
+        - id: marketing-service
+          uri: http://localhost:50004
+          predicates:
+            - Path=/api/marketing/**
+          filters:
+            - StripPrefix=1
+        
+        # 系统管理服务路由
+        - id: system-service
+          uri: http://localhost:50005
+          predicates:
+            - Path=/api/system/**,/api/common/**
+          filters:
+            - StripPrefix=1
+        
+        # AI分析服务路由
+        - id: analytics-service
+          uri: http://localhost:50006
+          predicates:
+            - Path=/api/analytics/**
+          filters:
+            - StripPrefix=1
+        
+        # 仪表盘服务路由
+        - id: dashboard-service
+          uri: http://localhost:50007
+          predicates:
+            - Path=/api/dashboard/**
+          filters:
+            - StripPrefix=1
+        
+        # 文件服务路由
+        - id: file-service
+          uri: http://localhost:50008
+          predicates:
+            - Path=/api/files/**
+          filters:
+            - StripPrefix=1
+      
+      # 全局跨域配置
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+
+server:
+  port: 50001
+
+# JWT配置
+jwt:
+  secret: ${JWT_SECRET:ai-crm-jwt-secret-key-2024}
+  expiration: 86400000
+
+# 日志配置
+logging:
+  level:
+    com.aicrm: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

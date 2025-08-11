@@ -1,0 +1,10 @@
+---
+description:
+端口号必须使用项目设计文档中的端口号，如果端口号被占用，就杀掉占用的进程。
+使用git进行版本管理时，git版本号上要加上日期。
+
+
+globs: true
+alwaysApply:  true
+---
+

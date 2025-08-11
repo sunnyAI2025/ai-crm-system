@@ -1,0 +1,120 @@
+.main-layout {
+  min-height: 100vh;
+}
+
+.layout-sider {
+  background: #001529 !important;
+}
+
+.logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid #303030;
+  margin-bottom: 8px;
+}
+
+.logo-icon {
+  font-size: 24px;
+  color: #1890ff;
+  margin-right: 12px;
+}
+
+.logo-text {
+  color: white;
+}
+
+.logo-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.logo-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1;
+}
+
+.layout-menu {
+  border-right: none;
+}
+
+.layout-menu .ant-menu-item {
+  margin: 4px 8px;
+  border-radius: 6px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.layout-menu .ant-menu-submenu {
+  margin: 4px 8px;
+}
+
+.layout-menu .ant-menu-submenu > .ant-menu-submenu-title {
+  border-radius: 6px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.layout-header {
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 10;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-info:hover {
+  background-color: #f5f5f5;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.user-role {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.layout-content {
+  margin: 16px;
+  padding: 24px;
+  min-height: calc(100vh - 96px);
+}
+
+/* 移动端响应式 */
+@media (max-width: 768px) {
+  .user-details {
+    display: none;
+  }
+  
+  .layout-content {
+    margin: 8px;
+    padding: 16px;
+  }
+}

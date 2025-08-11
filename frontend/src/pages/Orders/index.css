@@ -1,0 +1,166 @@
+.orders-page {
+  .page-header {
+    margin-bottom: 16px;
+  }
+
+  .ant-table-wrapper {
+    background: white;
+    border-radius: 8px;
+  }
+
+  .ant-table-tbody > tr > td {
+    vertical-align: top;
+    padding: 12px 16px;
+  }
+
+  .ant-table-tbody > tr:hover > td {
+    background-color: #f5f5f5;
+  }
+
+  .ant-btn-link {
+    padding: 4px 8px;
+    height: auto;
+  }
+
+  .ant-btn-link:hover {
+    background-color: rgba(24, 144, 255, 0.08);
+    border-radius: 4px;
+  }
+
+  .ant-btn-link.ant-btn-dangerous:hover {
+    background-color: rgba(245, 34, 45, 0.08);
+  }
+}
+
+/* 订单状态标签样式 */
+.ant-tag {
+  border-radius: 12px;
+  font-size: 12px;
+  padding: 2px 8px;
+  margin: 2px;
+  font-weight: 500;
+}
+
+/* 订单信息区域样式 */
+.order-info {
+  .order-no {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .product-name {
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  
+  .amount {
+    font-weight: 600;
+    color: #f5222d;
+  }
+}
+
+/* 客户信息样式 */
+.customer-info {
+  .customer-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .customer-phone {
+    color: #666;
+    font-size: 12px;
+  }
+}
+
+/* 进度条样式 */
+.ant-progress {
+  margin: 0;
+}
+
+.ant-progress-line {
+  margin-bottom: 4px;
+}
+
+.ant-progress-text {
+  font-size: 11px;
+}
+
+/* 交付日期样式 */
+.delivery-info {
+  .expected {
+    color: #666;
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+  
+  .actual {
+    color: #52c41a;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  .orders-page {
+    .ant-table-wrapper {
+      overflow-x: auto;
+    }
+    
+    .ant-col {
+      margin-bottom: 8px;
+    }
+    
+    .page-header {
+      text-align: center;
+    }
+    
+    .ant-table-tbody > tr > td {
+      font-size: 11px;
+      padding: 8px 4px;
+    }
+    
+    .ant-btn-link {
+      font-size: 11px;
+      padding: 2px 4px;
+    }
+    
+    .ant-progress-text {
+      font-size: 10px;
+    }
+    
+    .delivery-info .expected,
+    .delivery-info .actual {
+      font-size: 10px;
+    }
+  }
+}
+
+/* 搜索和筛选区域 */
+.ant-input-search .ant-input-group-addon {
+  background: #f5f5f5;
+}
+
+.ant-select-selector {
+  border-radius: 6px;
+}
+
+.ant-picker {
+  border-radius: 6px;
+}
+
+/* 表单样式优化 */
+.ant-modal .ant-form-item-label > label {
+  font-weight: 500;
+}
+
+/* 订单编号特殊样式 */
+.order-number {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}

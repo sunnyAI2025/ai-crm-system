@@ -1,0 +1,216 @@
+# CRM系统微服务API路由配置
+# 用于Spring Cloud Gateway API网关路由配置
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        # ====================================
+        # 认证服务路由 (auth-service:50002)
+        # ====================================
+        - id: auth-service
+          uri: http://localhost:50002
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=2
+        
+        # ====================================
+        # 销售管理服务路由 (sales-service:50003)
+        # ====================================
+        - id: sales-service-leads
+          uri: http://localhost:50003
+          predicates:
+            - Path=/api/sales/leads/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        - id: sales-service-customers
+          uri: http://localhost:50003
+          predicates:
+            - Path=/api/sales/customers/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        - id: sales-service-orders
+          uri: http://localhost:50003
+          predicates:
+            - Path=/api/sales/orders/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        # ====================================
+        # 营销管理服务路由 (marketing-service:50004)
+        # ====================================
+        - id: marketing-service
+          uri: http://localhost:50004
+          predicates:
+            - Path=/api/marketing/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        # ====================================
+        # 系统管理服务路由 (system-service:50005)
+        # ====================================
+        - id: system-service
+          uri: http://localhost:50005
+          predicates:
+            - Path=/api/system/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        # ====================================
+        # 数据分析服务路由 (analytics-service:50006)
+        # ====================================
+        - id: analytics-service
+          uri: http://localhost:50006
+          predicates:
+            - Path=/api/analytics/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        # ====================================
+        # 仪表盘服务路由 (dashboard-service:50007)
+        # ====================================
+        - id: dashboard-service
+          uri: http://localhost:50007
+          predicates:
+            - Path=/api/dashboard/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        # ====================================
+        # 文件服务路由 (file-service:50008)
+        # ====================================
+        - id: file-service
+          uri: http://localhost:50008
+          predicates:
+            - Path=/api/files/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        # ====================================
+        # 通用功能路由 (system-service:50005)
+        # ====================================
+        - id: common-service
+          uri: http://localhost:50005
+          predicates:
+            - Path=/api/common/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+
+      # 全局过滤器配置
+      default-filters:
+        - name: Retry
+          args:
+            retries: 3
+            methods: GET,POST,PUT,DELETE
+        - name: CircuitBreaker
+          args:
+            name: default-circuit-breaker
+            fallbackUri: forward:/api/fallback
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 100
+            redis-rate-limiter.burstCapacity: 200
+        - AddResponseHeader=X-Response-Default-Foo, Default-Bar
+
+      # 跨域配置
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+
+# ====================================
+# 服务发现配置
+# ====================================
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# ====================================
+# 负载均衡配置
+# ====================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+
+# ====================================
+# 日志配置
+# ====================================
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web.reactive: DEBUG
+    reactor.netty: DEBUG
+
+---
+# ====================================
+# 开发环境配置
+# ====================================
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  cloud:
+    gateway:
+      routes:
+        # 开发环境路由配置
+        - id: auth-service-dev
+          uri: http://localhost:50002
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=2
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+
+---
+# ====================================
+# 生产环境配置
+# ====================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  cloud:
+    gateway:
+      routes:
+        # 生产环境路由配置
+        - id: auth-service-prod
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=2
+
+logging:
+  level:
+    org.springframework.cloud.gateway: WARN

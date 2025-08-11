@@ -1,0 +1,27 @@
+# AI CRM 系统环境变量配置示例
+# 复制此文件为 config.properties 并填入实际值
+
+# 数据库配置
+DATABASE_URL=jdbc:postgresql://ep-plain-moon-aewc6a58-pooler.c-2.us-east-2.aws.neon.tech:5432/neondb
+DATABASE_USERNAME=neondb_owner
+DATABASE_PASSWORD=npg_TCx79eZizfGU
+
+# JWT配置
+JWT_SECRET=ai-crm-jwt-secret-key-2024
+
+# 前端配置
+VITE_API_BASE_URL=http://localhost:50001/api
+
+# 文件上传配置
+FILE_UPLOAD_PATH=/tmp/uploads/
+FILE_MAX_SIZE=10MB
+
+# Redis配置 (可选)
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+# 外部API配置 (可选)
+OPENAI_API_KEY=
+TENCENT_CLOUD_SECRET_ID=
+TENCENT_CLOUD_SECRET_KEY=

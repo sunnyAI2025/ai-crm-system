@@ -1,0 +1,182 @@
+.roles-page {
+  .page-header {
+    margin-bottom: 16px;
+  }
+
+  .ant-table-wrapper {
+    background: white;
+    border-radius: 8px;
+  }
+
+  .ant-table-tbody > tr > td {
+    vertical-align: top;
+    padding: 12px 16px;
+  }
+
+  .ant-table-tbody > tr:hover > td {
+    background-color: #f5f5f5;
+  }
+
+  .ant-btn-link {
+    padding: 4px 8px;
+    height: auto;
+  }
+
+  .ant-btn-link:hover {
+    background-color: rgba(24, 144, 255, 0.08);
+    border-radius: 4px;
+  }
+
+  .ant-btn-link.ant-btn-dangerous:hover {
+    background-color: rgba(245, 34, 45, 0.08);
+  }
+}
+
+/* 角色信息区域样式 */
+.role-info {
+  .role-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .role-code {
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  
+  .role-description {
+    color: #666;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
+
+/* 权限标签样式 */
+.permissions-container {
+  .ant-tag {
+    border-radius: 10px;
+    font-size: 11px;
+    padding: 1px 6px;
+    margin: 2px;
+  }
+}
+
+/* 用户数量样式 */
+.user-count {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  
+  .anticon {
+    margin-right: 4px;
+    color: #1890ff;
+  }
+}
+
+/* 权限树样式 */
+.ant-tree {
+  .ant-tree-node-content-wrapper {
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  
+  .ant-tree-node-content-wrapper:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .ant-tree-node-selected {
+    background-color: #e6f7ff !important;
+  }
+  
+  .ant-tree-checkbox {
+    margin-right: 8px;
+  }
+  
+  .ant-tree-title {
+    font-size: 14px;
+  }
+}
+
+/* 权限树容器 */
+.permission-tree-container {
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  padding: 8px;
+  background-color: #fafafa;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  .roles-page {
+    .ant-table-wrapper {
+      overflow-x: auto;
+    }
+    
+    .ant-col {
+      margin-bottom: 8px;
+    }
+    
+    .page-header {
+      text-align: center;
+    }
+    
+    .ant-table-tbody > tr > td {
+      font-size: 11px;
+      padding: 8px 4px;
+    }
+    
+    .ant-btn-link {
+      font-size: 11px;
+      padding: 2px 4px;
+    }
+    
+    .role-info {
+      .role-code,
+      .role-description {
+        font-size: 10px;
+      }
+    }
+    
+    .permissions-container .ant-tag {
+      font-size: 10px;
+      padding: 1px 4px;
+    }
+  }
+}
+
+/* 搜索和筛选区域 */
+.ant-input-search .ant-input-group-addon {
+  background: #f5f5f5;
+}
+
+.ant-select-selector {
+  border-radius: 6px;
+}
+
+/* 表单样式优化 */
+.ant-modal .ant-form-item-label > label {
+  font-weight: 500;
+}
+
+/* 禁用按钮样式 */
+.ant-btn-link[disabled] {
+  color: #d9d9d9 !important;
+  cursor: not-allowed;
+}
+
+/* 权限模块标题样式 */
+.permission-module {
+  font-weight: 600;
+  color: #1890ff;
+}
+
+/* 权限项样式 */
+.permission-item {
+  color: #666;
+  margin-left: 20px;
+}
