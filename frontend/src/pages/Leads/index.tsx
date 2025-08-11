@@ -15,6 +15,7 @@ import {
   Col,
   Divider,
   Popconfirm,
+  DatePicker,
 } from 'antd';
 import {
   PlusOutlined,
@@ -24,7 +25,9 @@ import {
   PhoneOutlined,
   MailOutlined,
   UserOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import type { ColumnsType } from 'antd/es/table';
 import request from '@/utils/request';
 import type { ApiResponse } from '@/types/api';
@@ -33,6 +36,7 @@ import './index.css';
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
+const { RangePicker } = DatePicker;
 
 interface Lead {
   id: number;
@@ -59,12 +63,23 @@ const Leads: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [searchText, setSearchText] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [sourceFilter, setSourceFilter] = useState<string>('');
+  
+  // 筛选条件状态
+  const [filters, setFilters] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    source: '',
+    status: '',
+    assignedTo: '',
+    startDate: '',
+    endDate: '',
+  });
+  
   const [modalVisible, setModalVisible] = useState(false);
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
 
   // 线索状态选项
   const statusOptions = [
@@ -86,16 +101,21 @@ const Leads: React.FC = () => {
   ];
 
   // 获取线索列表
-  const fetchLeads = async () => {
+  const fetchLeads = async (searchFilters = filters) => {
     setLoading(true);
     try {
       const params = {
         page: current,
         pageSize,
-        search: searchText,
-        status: statusFilter,
-        source: sourceFilter,
+        ...searchFilters,
       };
+      
+      // 清除空值参数
+      Object.keys(params).forEach(key => {
+        if (params[key as keyof typeof params] === '' || params[key as keyof typeof params] === null || params[key as keyof typeof params] === undefined) {
+          delete params[key as keyof typeof params];
+        }
+      });
       
       const response = await request.get<ApiResponse<LeadsResponse>>('/leads', { params });
       
@@ -105,6 +125,7 @@ const Leads: React.FC = () => {
       }
     } catch (error) {
       console.error('获取线索列表失败:', error);
+      message.error('获取线索列表失败');
     } finally {
       setLoading(false);
     }
@@ -113,22 +134,52 @@ const Leads: React.FC = () => {
   // 初始化加载
   useEffect(() => {
     fetchLeads();
-  }, [current, pageSize, searchText, statusFilter, sourceFilter]);
+  }, [current, pageSize]);
 
-  // 处理搜索
-  const handleSearch = (value: string) => {
-    setSearchText(value);
+  // 处理查询
+  const handleSearch = () => {
+    const values = filterForm.getFieldsValue();
+    
+    // 处理日期范围
+    let startDate = '';
+    let endDate = '';
+    if (values.dateRange && values.dateRange.length === 2) {
+      startDate = values.dateRange[0].format('YYYY-MM-DD');
+      endDate = values.dateRange[1].format('YYYY-MM-DD');
+    }
+    
+    const newFilters = {
+      name: values.name || '',
+      phone: values.phone || '',
+      email: values.email || '',
+      source: values.source || '',
+      status: values.status || '',
+      assignedTo: values.assignedTo || '',
+      startDate,
+      endDate,
+    };
+    
+    setFilters(newFilters);
     setCurrent(1);
+    fetchLeads(newFilters);
   };
 
-  // 处理筛选
-  const handleFilter = (type: string, value: string) => {
-    if (type === 'status') {
-      setStatusFilter(value);
-    } else if (type === 'source') {
-      setSourceFilter(value);
-    }
+  // 重置筛选条件
+  const handleReset = () => {
+    filterForm.resetFields();
+    const resetFilters = {
+      name: '',
+      phone: '',
+      email: '',
+      source: '',
+      status: '',
+      assignedTo: '',
+      startDate: '',
+      endDate: '',
+    };
+    setFilters(resetFilters);
     setCurrent(1);
+    fetchLeads(resetFilters);
   };
 
   // 打开新增/编辑弹窗
@@ -153,32 +204,49 @@ const Leads: React.FC = () => {
   // 保存线索
   const handleSave = async (values: any) => {
     try {
+      setLoading(true);
       const url = editingLead ? `/leads/${editingLead.id}` : '/leads';
       const method = editingLead ? 'put' : 'post';
       
       const response = await request[method]<ApiResponse<any>>(url, values);
       
       if (response.data.code === 0) {
-        message.success(editingLead ? '更新成功' : '创建成功');
+        message.success(editingLead ? '线索更新成功' : '线索创建成功');
         closeModal();
         fetchLeads();
+      } else {
+        message.error(response.data.message || '操作失败');
       }
     } catch (error) {
-      message.error('保存失败');
+      console.error('保存线索失败:', error);
+      message.error(editingLead ? '更新失败，请重试' : '创建失败，请重试');
+    } finally {
+      setLoading(false);
     }
   };
 
   // 删除线索
   const handleDelete = async (id: number) => {
     try {
+      setLoading(true);
       const response = await request.delete<ApiResponse<any>>(`/leads/${id}`);
       
       if (response.data.code === 0) {
-        message.success('删除成功');
-        fetchLeads();
+        message.success('线索删除成功');
+        // 如果当前页已经没有数据且不是第一页，则回到上一页
+        if (leads.length === 1 && current > 1) {
+          setCurrent(current - 1);
+        } else {
+          fetchLeads();
+        }
+      } else {
+        message.error(response.data.message || '删除失败');
       }
     } catch (error) {
-      message.error('删除失败');
+      console.error('删除线索失败:', error);
+      message.error('删除失败，请重试');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -304,45 +372,93 @@ const Leads: React.FC = () => {
 
         <Divider />
 
+        {/* 筛选条件区域 */}
+        <Card style={{ marginBottom: 16, backgroundColor: '#fafafa' }}>
+          <Form form={filterForm} layout="vertical">
+            <Row gutter={[16, 8]}>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label="姓名" name="name" style={{ marginBottom: 8 }}>
+                  <Input placeholder="请输入姓名" allowClear />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label="联系电话" name="phone" style={{ marginBottom: 8 }}>
+                  <Input placeholder="请输入联系电话" allowClear />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label="邮箱" name="email" style={{ marginBottom: 8 }}>
+                  <Input placeholder="请输入邮箱" allowClear />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label="来源" name="source" style={{ marginBottom: 8 }}>
+                  <Select placeholder="请选择来源" allowClear>
+                    {sourceOptions.map(source => (
+                      <Option key={source} value={source}>
+                        {source}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label="状态" name="status" style={{ marginBottom: 8 }}>
+                  <Select placeholder="请选择状态" allowClear>
+                    {statusOptions.map(option => (
+                      <Option key={option.value} value={option.value}>
+                        {option.label}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label="负责人" name="assignedTo" style={{ marginBottom: 8 }}>
+                  <Input placeholder="请输入负责人" allowClear />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label="创建时间" name="dateRange" style={{ marginBottom: 8 }}>
+                  <RangePicker
+                    style={{ width: '100%' }}
+                    placeholder={['开始日期', '结束日期']}
+                    format="YYYY-MM-DD"
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={6}>
+                <Form.Item label=" " style={{ marginBottom: 8 }}>
+                  <Space>
+                    <Button
+                      type="primary"
+                      icon={<SearchOutlined />}
+                      onClick={handleSearch}
+                      loading={loading}
+                    >
+                      查询
+                    </Button>
+                    <Button
+                      icon={<ReloadOutlined />}
+                      onClick={handleReset}
+                    >
+                      重置
+                    </Button>
+                  </Space>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
+
         {/* 操作区域 */}
-        <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-          <Col xs={24} sm={12} md={8} lg={6}>
-            <Input.Search
-              placeholder="搜索姓名、电话、邮箱"
-              allowClear
-              onSearch={handleSearch}
-              style={{ width: '100%' }}
-            />
+        <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+          <Col>
+            <Text type="secondary">
+              共找到 {total} 条线索数据
+            </Text>
           </Col>
-          <Col xs={12} sm={6} md={4} lg={3}>
-            <Select
-              placeholder="状态筛选"
-              allowClear
-              style={{ width: '100%' }}
-              onChange={(value) => handleFilter('status', value || '')}
-            >
-              {statusOptions.map(option => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
-          </Col>
-          <Col xs={12} sm={6} md={4} lg={3}>
-            <Select
-              placeholder="来源筛选"
-              allowClear
-              style={{ width: '100%' }}
-              onChange={(value) => handleFilter('source', value || '')}
-            >
-              {sourceOptions.map(source => (
-                <Option key={source} value={source}>
-                  {source}
-                </Option>
-              ))}
-            </Select>
-          </Col>
-          <Col xs={24} sm={12} md={8} lg={6} style={{ textAlign: 'right' }}>
+          <Col>
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -480,8 +596,8 @@ const Leads: React.FC = () => {
               <Button onClick={closeModal}>
                 取消
               </Button>
-              <Button type="primary" htmlType="submit">
-                保存
+              <Button type="primary" htmlType="submit" loading={loading}>
+                确定
               </Button>
             </Space>
           </Form.Item>
