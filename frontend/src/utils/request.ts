@@ -72,6 +72,8 @@ request.interceptors.response.use(
 
 // Mock数据响应
 function getMockResponse(url?: string, method?: string) {
+  console.log(`Mock API调用: ${method?.toUpperCase()} ${url}`);
+  
   const mockData: any = {
     data: {
       code: 0,
@@ -134,6 +136,18 @@ function getMockResponse(url?: string, method?: string) {
         page: 1,
         pageSize: 10,
       };
+    } else if (method?.toLowerCase() === 'delete') {
+      // 删除操作的Mock响应
+      mockData.data.message = '线索删除成功';
+      mockData.data.data = { success: true };
+    } else if (method?.toLowerCase() === 'post') {
+      // 新增操作的Mock响应
+      mockData.data.message = '线索创建成功';
+      mockData.data.data = { id: Date.now() };
+    } else if (method?.toLowerCase() === 'put') {
+      // 编辑操作的Mock响应
+      mockData.data.message = '线索更新成功';
+      mockData.data.data = { id: Date.now() };
     } else {
       mockData.data.data = { id: Date.now() };
     }

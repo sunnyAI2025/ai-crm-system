@@ -208,12 +208,33 @@ const Leads: React.FC = () => {
       const url = editingLead ? `/leads/${editingLead.id}` : '/leads';
       const method = editingLead ? 'put' : 'post';
       
+      console.log('保存线索数据:', values);
+      
       const response = await request[method]<ApiResponse<any>>(url, values);
+      console.log('保存响应:', response);
       
       if (response.data.code === 0) {
-        message.success(editingLead ? '线索更新成功' : '线索创建成功');
+        message.success(response.data.message || (editingLead ? '线索更新成功' : '线索创建成功'));
         closeModal();
-        fetchLeads();
+        
+        if (editingLead) {
+          // 更新列表中的数据
+          const updatedLeads = leads.map(lead => 
+            lead.id === editingLead.id 
+              ? { ...lead, ...values, id: editingLead.id } 
+              : lead
+          );
+          setLeads(updatedLeads);
+        } else {
+          // 添加新数据到列表
+          const newLead = {
+            ...values,
+            id: response.data.data?.id || Date.now(),
+            createdAt: new Date().toLocaleString(),
+          };
+          setLeads([newLead, ...leads]);
+          setTotal(total + 1);
+        }
       } else {
         message.error(response.data.message || '操作失败');
       }
@@ -229,15 +250,23 @@ const Leads: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       setLoading(true);
+      console.log('开始删除线索，ID:', id);
+      
       const response = await request.delete<ApiResponse<any>>(`/leads/${id}`);
+      console.log('删除响应:', response);
       
       if (response.data.code === 0) {
-        message.success('线索删除成功');
+        message.success(response.data.message || '线索删除成功');
+        
+        // 模拟删除后数据更新
+        const updatedLeads = leads.filter(lead => lead.id !== id);
+        setLeads(updatedLeads);
+        setTotal(Math.max(0, total - 1));
+        
         // 如果当前页已经没有数据且不是第一页，则回到上一页
-        if (leads.length === 1 && current > 1) {
+        if (updatedLeads.length === 0 && current > 1) {
           setCurrent(current - 1);
-        } else {
-          fetchLeads();
+          setTimeout(() => fetchLeads(), 100);
         }
       } else {
         message.error(response.data.message || '删除失败');
