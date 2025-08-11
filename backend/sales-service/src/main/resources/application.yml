@@ -23,7 +23,7 @@ spring:
         format_sql: true
 
 server:
-  port: 50003
+  port: 50001
 
 # JWT配置
 jwt:
